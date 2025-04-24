@@ -4,8 +4,7 @@ import plotly.graph_objects as go
 
 # === CONFIG ===
 API_URL = "https://gateway.saxobank.com/sim/openapi/trade/v1/optionschain/subscriptions"
-ACCOUNT_KEY = "0YjLF1Y-JKcSsNThRzEETA=="
-IDENTIFIER = 151 #1698 
+IDENTIFIER = 1698  # Porsche
 CONTEXT_ID = "plotlyVolContext"
 REFERENCE_ID_BASE = "PorscheVol"
 REFRESH_RATE = 1000
@@ -13,6 +12,7 @@ REFRESH_RATE = 1000
 # === STREAMLIT UI ===
 st.title("📊 Porsche Options Volatility Surface (Interactive)")
 access_token = st.text_input("Enter Saxo Access Token", type="password")
+account_key = st.text_input("Enter Saxo Account Key", type="password")
 
 start_expiry = st.slider("Start Expiry Index", 0, 7, 0)
 end_expiry = st.slider("End Expiry Index", start_expiry, 7, min(start_expiry + 2, 7))
@@ -22,17 +22,17 @@ max_strikes = st.slider("Max Strikes Per Expiry", 5, 45, 30)
 headers = {
     "Authorization": f"Bearer {access_token}",
     "Content-Type": "application/json"
-}   
+}
 
 # === Fetch and Parse Data ===
 X, Y, Z = [], [], []
 
-if access_token:
+if access_token and account_key:
     with st.spinner("Fetching options data..."):
         for expiry_index in range(start_expiry, end_expiry + 1):
             payload = {
                 "Arguments": {
-                    "AccountKey": ACCOUNT_KEY,
+                    "AccountKey": account_key,
                     "AssetType": "StockOption",
                     "Expiries": [{
                         "Index": expiry_index,
@@ -81,4 +81,4 @@ if access_token:
     else:
         st.warning("No valid IV data found.")
 else:
-    st.info("🔐 Enter your Saxo access token to begin.")
+    st.info("🔐 Please enter both your Saxo Access Token and Account Key to begin.")
